@@ -154,24 +154,3 @@ class Log2Hist
         fflush(stdout);
     }
 };
-
-int main(void)
-{
-    Log2Hist hist(10);
-    hist.Add(1);
-    hist.Add(2);
-    hist.Add(3);
-    hist.Add(4);
-    hist.Add(5);
-    hist.Add(6);
-    hist.Add(7);
-    hist.Add(8);
-    hist.Add(45);
-    for (int i = 0; i < 10; i++) hist.Add(45);
-    hist.Add(77);
-    hist.Add(90);
-    hist.Add(223);
-    hist.Add(655);
-    hist.Add(440);
-    hist.PrintLog2Hist();
-}
