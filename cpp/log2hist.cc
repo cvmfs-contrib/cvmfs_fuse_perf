@@ -12,6 +12,7 @@
 #include <iostream>
 #include <cmath>
 #include <mutex>
+#include <cassert>
 using namespace std; // NOLINT
 
 #define BUFFSIZE 150
@@ -41,6 +42,7 @@ class Log2Hist
  public:
     explicit Log2Hist(uint32_t n)
     {
+        assert(n != 0);
         this->number_of_bins = n;
         this->bins = new uint32_t[n];
         this->boundary_values = new uint32_t[n];
@@ -71,6 +73,10 @@ class Log2Hist
                 return;
             }
         }
+    }
+    uint32_t *GetBins()
+    {
+        return this->bins;
     }
     std::string Print()
     {
