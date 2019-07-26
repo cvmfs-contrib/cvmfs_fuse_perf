@@ -1,2 +1,5 @@
 all:
 	g++ log2hist.cc -o log2hist
+
+test:
+	g++ -lgtest t_log2hist.cc -o t_log2hist 
