@@ -3,3 +3,7 @@ all:
 
 test:
 	g++ -lgtest t_log2hist.cc -o t_log2hist 
+	./t_log2hist
+
+clean:
+	rm log2hist t_log2hist
