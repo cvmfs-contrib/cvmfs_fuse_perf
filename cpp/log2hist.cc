@@ -11,6 +11,7 @@
 #include <string>
 #include <iostream>
 #include <cmath>
+#include <mutex>
 using namespace std; // NOLINT
 
 #define BUFFSIZE 150
@@ -18,6 +19,8 @@ using namespace std; // NOLINT
 class Log2Hist
 {
  private:
+    mutex _mutex;
+
     uint32_t number_of_bins;
     uint32_t *bins;
     uint32_t *boundary_values;
@@ -63,7 +66,9 @@ class Log2Hist
         {
             if (value < this->boundary_values[i])
             {
+                _mutex.lock();
                 this->bins[i]++;
+                _mutex.unlock();
                 return;
             }
         }
