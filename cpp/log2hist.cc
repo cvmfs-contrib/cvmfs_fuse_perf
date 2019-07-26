@@ -20,7 +20,6 @@ class Log2Hist
 {
  private:
     mutex _mutex;
-
     uint32_t number_of_bins;
     uint32_t *bins;
     uint32_t *boundary_values;
