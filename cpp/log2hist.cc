@@ -44,15 +44,15 @@ class Log2Hist
     {
         assert(n != 0);
         this->number_of_bins = n;
-        this->bins = new uint32_t[n];
-        this->boundary_values = new uint32_t[n];
-        memset(this->bins, 0, sizeof(uint32_t) * n);
-        memset(this->boundary_values, 0, sizeof(uint32_t) * n);
+        this->bins = new uint32_t[n + 1]; // +1 for overflow bin.
+        this->boundary_values = new uint32_t[n + 1]; // +1 to avoid giant if statement
+        memset(this->bins, 0, sizeof(uint32_t) * (n + 1));
+        memset(this->boundary_values, 0, sizeof(uint32_t) * (n + 1));
 
         uint32_t i;
-        for (i = 0; i < n; i++)
+        for (i = 1; i <= n; i++)
         {
-            this->boundary_values[i] = (1 << (i + 1));
+            this->boundary_values[i] = (1 << ((i - 1) + 1));
         }
     }
     ~Log2Hist()
@@ -63,15 +63,22 @@ class Log2Hist
     void Add(float value)
     {
         uint32_t i;
-        for (i = 0; i < this->number_of_bins; i++)
+        uint32_t flag = 1; 
+
+        for (i = 1; i <= this->number_of_bins; i++)
         {
             if (value < this->boundary_values[i])
             {
                 _mutex.lock();
                 this->bins[i]++;
+                flag = 0;
                 _mutex.unlock();
                 return;
             }
+        }
+        if (flag)
+        {
+            this->bins[0]++; // add to overflow bin.
         }
     }
     uint32_t *GetBins()
@@ -90,7 +97,7 @@ class Log2Hist
         uint32_t total_stars = 38;
         uint32_t total_sum_of_bins = 0;
 
-        for (i = 0; i < number_of_bins; i++)
+        for (i = 1; i <= number_of_bins; i++)
         {
             max_left_boundary_count = max(max_left_boundary_count,
                                         count_digits(boundary_values[i] / 2));
@@ -101,19 +108,31 @@ class Log2Hist
             total_sum_of_bins += bins[i];
         }
 
+        max_bins = max(max_bins, bins[0]);
+        total_sum_of_bins += bins[0];
+
+
         max_stars = max_bins * total_stars / total_sum_of_bins;
 
-        string format = "%" + to_string(max_left_boundary_count) +
+        string format = " %" + to_string(max_left_boundary_count) +
                         "d -> %" + to_string(max_right_boundary_count) +
                         "d :     %" + to_string(max_value_count) + "d | %" +
                         to_string(max_stars) + "s |\n";
 
-        string title_format = "%" +
+        string title_format = " %" +
                         to_string(max_left_boundary_count +
                                     max_right_boundary_count +
                                     4) +
                         "s | %" + to_string(max_value_count + 4) +
-                        "s : %" + to_string(max_stars) + "s\n";
+                        "s | %" + to_string(max_stars) + "s |\n";
+
+        string overflow_format = "%" +
+                        to_string(max_left_boundary_count +
+                                    max_right_boundary_count +
+                                    5) +
+                        "s : %" + to_string(max_value_count + 4) +
+                        "d | %" + to_string(max_stars) + "s |\n";
+
 
         string result_string = "";
 
@@ -129,32 +148,29 @@ class Log2Hist
         result_string += buffer;
         memset(buffer, 0, sizeof(buffer));
 
-        for (i = 0; i < number_of_bins; i++)
+        for (i = 1; i <= number_of_bins; i++)
         {
             uint32_t n_of_stars = bins[i] * total_stars / total_sum_of_bins;
-            if (i == 0)
-            {
-                snprintf(buffer,
-                        BUFFSIZE,
-                        format.c_str(),
-                        0,
-                        boundary_values[i] - 1,
-                        bins[i],
-                        generate_stars(n_of_stars).c_str());
-                result_string += buffer;
-                memset(buffer, 0, sizeof(buffer));
-            } else {
-                snprintf(buffer,
-                        BUFFSIZE,
-                        format.c_str(),
-                        boundary_values[i] / 2,
-                        boundary_values[i] - 1,
-                        bins[i],
-                        generate_stars(n_of_stars).c_str());
-                result_string += buffer;
-                memset(buffer, 0, sizeof(buffer));
-            }
+            snprintf(buffer,
+                    BUFFSIZE,
+                    format.c_str(),
+                    boundary_values[i - 1],
+                    boundary_values[i] - 1,
+                    bins[i],
+                    generate_stars(n_of_stars).c_str());
+            result_string += buffer;
+            memset(buffer, 0, sizeof(buffer));
         }
+
+        uint32_t n_of_stars = bins[0] * total_stars / total_sum_of_bins;
+        snprintf(buffer,
+                BUFFSIZE,
+                overflow_format.c_str(),
+                "overflow",
+                bins[0],
+                generate_stars(n_of_stars).c_str());
+        result_string += buffer;
+        memset(buffer, 0, sizeof(buffer));
 
         return result_string;
     }
@@ -168,21 +184,15 @@ class Log2Hist
 
 int main(void)	
 {	
-    Log2Hist hist(10);	
+    Log2Hist hist(20);	
     hist.Add(1);	
     hist.Add(2);	
     hist.Add(3);	
     hist.Add(4);	
     hist.Add(5);	
-    hist.Add(6);	
-    hist.Add(7);	
-    hist.Add(8);	
-    hist.Add(45);	
-    for (int i = 0; i < 10; i++) hist.Add(45);	
-    hist.Add(77);	
-    hist.Add(90);	
-    hist.Add(223);	
-    hist.Add(655);	
-    hist.Add(440);	
+    hist.Add(8);
+    for (int i = 0; i < 100; i++) {
+        hist.Add(1048576);	
+    }
     hist.PrintLog2Hist();	
 }	
