@@ -103,17 +103,17 @@ class Log2Hist
 
         max_stars = max_bins * total_stars / total_sum_of_bins;
 
-        string format = "%-" + to_string(max_left_boundary_count) +
-                        "d -> %-" + to_string(max_right_boundary_count) +
-                        "d :     %-" + to_string(max_value_count) + "d | %-" +
+        string format = "%" + to_string(max_left_boundary_count) +
+                        "d -> %" + to_string(max_right_boundary_count) +
+                        "d :     %" + to_string(max_value_count) + "d | %" +
                         to_string(max_stars) + "s |\n";
 
-        string title_format = "%-" +
+        string title_format = "%" +
                         to_string(max_left_boundary_count +
                                     max_right_boundary_count +
                                     4) +
-                        "s | %-" + to_string(max_value_count + 4) +
-                        "s : %-" + to_string(max_stars) + "s\n";
+                        "s | %" + to_string(max_value_count + 4) +
+                        "s : %" + to_string(max_stars) + "s\n";
 
         string result_string = "";
 
@@ -164,3 +164,25 @@ class Log2Hist
         fflush(stdout);
     }
 };
+
+
+int main(void)	
+{	
+    Log2Hist hist(10);	
+    hist.Add(1);	
+    hist.Add(2);	
+    hist.Add(3);	
+    hist.Add(4);	
+    hist.Add(5);	
+    hist.Add(6);	
+    hist.Add(7);	
+    hist.Add(8);	
+    hist.Add(45);	
+    for (int i = 0; i < 10; i++) hist.Add(45);	
+    hist.Add(77);	
+    hist.Add(90);	
+    hist.Add(223);	
+    hist.Add(655);	
+    hist.Add(440);	
+    hist.PrintLog2Hist();	
+}	
