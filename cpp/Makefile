@@ -1,8 +1,8 @@
 all:
-	g++ log2hist.cc -o log2hist
+	g++ log2hist.cc -o log2hist -std=gnu++98
 
 test:
-	g++ -lgtest t_log2hist.cc -o t_log2hist 
+	g++ -lgtest t_log2hist.cc -o t_log2hist
 	./t_log2hist
 
 clean:
