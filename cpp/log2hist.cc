@@ -11,16 +11,17 @@
 #include <string>
 #include <iostream>
 #include <cmath>
-#include <mutex>
+#include <sstream>
 #include <cassert>
 using namespace std; // NOLINT
+typedef u_int32_t uint32_t;
+typedef u_int64_t uint64_t;
 
 #define BUFFSIZE 150
 
 class Log2Hist
 {
  private:
-    mutex _mutex;
     uint32_t number_of_bins;
     uint32_t *bins;
     uint32_t *boundary_values;
@@ -38,7 +39,12 @@ class Log2Hist
         }
         return stars;
     }
-
+    string to_string(uint32_t n)
+    {
+        stringstream s;
+        s << n;
+        return s.str();
+    }
  public:
     explicit Log2Hist(uint32_t n)
     {
@@ -69,10 +75,8 @@ class Log2Hist
         {
             if (value < this->boundary_values[i])
             {
-                _mutex.lock();
                 this->bins[i]++;
                 flag = 0;
-                _mutex.unlock();
                 return;
             }
         }
@@ -114,13 +118,13 @@ class Log2Hist
 
         max_stars = max_bins * total_stars / total_sum_of_bins;
 
-        string format = " %" + to_string(max_left_boundary_count) +
+        string format = " %" + to_string(max_left_boundary_count < 2 ? 2 : max_left_boundary_count) +
                         "d -> %" + to_string(max_right_boundary_count) +
                         "d :     %" + to_string(max_value_count) + "d | %" +
                         to_string(max_stars) + "s |\n";
 
         string title_format = " %" +
-                        to_string(max_left_boundary_count +
+                        to_string((max_left_boundary_count < 2 ? 2 : max_left_boundary_count) +
                                     max_right_boundary_count +
                                     4) +
                         "s | %" + to_string(max_value_count + 4) +
@@ -180,19 +184,3 @@ class Log2Hist
         fflush(stdout);
     }
 };
-
-
-int main(void)	
-{	
-    Log2Hist hist(20);	
-    hist.Add(1);	
-    hist.Add(2);	
-    hist.Add(3);	
-    hist.Add(4);	
-    hist.Add(5);	
-    hist.Add(8);
-    for (int i = 0; i < 100; i++) {
-        hist.Add(1048576);	
-    }
-    hist.PrintLog2Hist();	
-}	
