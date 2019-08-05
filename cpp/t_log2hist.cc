@@ -1,4 +1,5 @@
 #include "log2hist.cc"
+#include "atomic.h"
 #include <gtest/gtest.h>
  
 
@@ -8,11 +9,11 @@ TEST(BoundaryValueTest, 2Bin_Empty) {
     log2hist.Add(11);
     log2hist.Add(11.5);
     
-    uint *bins = log2hist.GetBins();
+    atomic_int32 *bins = log2hist.GetBins();
     uint res[3] = {3, 0, 0};
     for (int i = 0; i < 3; i++)
     {
-        EXPECT_EQ(res[i], bins[i]);
+        EXPECT_EQ(res[i], atomic_read32(&bins[i]));
     }   
 }
 
@@ -25,11 +26,11 @@ TEST(BoundaryValueTest, 2Bins) {
     log2hist.Add(3);
     log2hist.Add(4);
     
-    uint *bins = log2hist.GetBins();
+    atomic_int32 *bins = log2hist.GetBins();
     uint res[3] = {1, 3, 2};
     for (int i = 0; i < 3; i++)
     {
-        EXPECT_EQ(res[i], bins[i]);
+        EXPECT_EQ(res[i], atomic_read32(&bins[i]));
     }   
 }
  
@@ -48,11 +49,11 @@ TEST(BoundaryValueTest, 3Bins) {
     log2hist.Add(7);
     log2hist.Add(8);
     
-    uint *bins = log2hist.GetBins();
+    atomic_int32 *bins = log2hist.GetBins();
     uint res[4] = {1, 5, 2, 4};
     for (int i = 0; i < 4; i++)
     {
-        EXPECT_EQ(res[i], bins[i]);
+        EXPECT_EQ(res[i], atomic_read32(&bins[i]));
     }   
 }
 

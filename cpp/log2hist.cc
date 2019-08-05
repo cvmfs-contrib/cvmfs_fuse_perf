@@ -12,6 +12,7 @@
 #include <cmath>
 #include <sstream>
 #include <cassert>
+#include "atomic.h"
 using namespace std; // NOLINT
 
 #define BUFFSIZE 150
@@ -20,7 +21,7 @@ class Log2Hist
 {
  private:
     uint number_of_bins;
-    uint *bins;
+    atomic_int32 *bins;
     uint *boundary_values;
     uint count_digits(ulong n)
     {
@@ -47,9 +48,9 @@ class Log2Hist
     {
         assert(n != 0);
         this->number_of_bins = n;
-        this->bins = new uint[n + 1]; // +1 for overflow bin.
+        this->bins = new atomic_int32[n + 1]; // +1 for overflow bin.
         this->boundary_values = new uint[n + 1]; // +1 to avoid giant if statement
-        memset(this->bins, 0, sizeof(uint) * (n + 1));
+        memset(this->bins, 0, sizeof(atomic_int32) * (n + 1));
         memset(this->boundary_values, 0, sizeof(uint) * (n + 1));
 
         uint i;
@@ -72,17 +73,17 @@ class Log2Hist
         {
             if (value < this->boundary_values[i])
             {
-                this->bins[i]++;
+                atomic_inc32(&(this->bins[i]));
                 flag = 0;
                 return;
             }
         }
         if (flag)
         {
-            this->bins[0]++; // add to overflow bin.
+             atomic_inc32(&(this->bins[0])); // add to overflow bin.
         }
     }
-    uint *GetBins()
+    atomic_int32 *GetBins()
     {
         return this->bins;
     }
@@ -105,12 +106,12 @@ class Log2Hist
             max_right_boundary_count = max(max_right_boundary_count,
                                         count_digits(boundary_values[i] - 1));
             max_value_count = max(max_value_count, count_digits(bins[i]));
-            max_bins = max(max_bins, bins[i]);
-            total_sum_of_bins += bins[i];
+            max_bins = max(max_bins, (uint)atomic_read32(&bins[i]));
+            total_sum_of_bins += (uint)atomic_read32(&bins[i]);
         }
 
-        max_bins = max(max_bins, bins[0]);
-        total_sum_of_bins += bins[0];
+        max_bins = max(max_bins, (uint)atomic_read32(&bins[0]));
+        total_sum_of_bins += (uint)atomic_read32(&bins[0]);
 
 
         max_stars = max_bins * total_stars / total_sum_of_bins;
@@ -151,24 +152,24 @@ class Log2Hist
 
         for (i = 1; i <= number_of_bins; i++)
         {
-            uint n_of_stars = bins[i] * total_stars / total_sum_of_bins;
+            uint n_of_stars = (uint)atomic_read32(&bins[i]) * total_stars / total_sum_of_bins;
             snprintf(buffer,
                     BUFFSIZE,
                     format.c_str(),
                     boundary_values[i - 1],
                     boundary_values[i] - 1,
-                    bins[i],
+                    (uint)atomic_read32(&bins[i]),
                     generate_stars(n_of_stars).c_str());
             result_string += buffer;
             memset(buffer, 0, sizeof(buffer));
         }
 
-        uint n_of_stars = bins[0] * total_stars / total_sum_of_bins;
+        uint n_of_stars = (uint)atomic_read32(&bins[0]) * total_stars / total_sum_of_bins;
         snprintf(buffer,
                 BUFFSIZE,
                 overflow_format.c_str(),
                 "overflow",
-                bins[0],
+                (uint)atomic_read32(&bins[0]),
                 generate_stars(n_of_stars).c_str());
         result_string += buffer;
         memset(buffer, 0, sizeof(buffer));
@@ -181,3 +182,19 @@ class Log2Hist
         fflush(stdout);
     }
 };
+
+int main(void)		
+{		
+    Log2Hist hist(2);		
+    hist.Add(1);		
+    hist.Add(2);		
+    hist.Add(2);		
+    hist.Add(3);		
+    hist.Add(4);		
+    hist.Add(5);		
+    hist.Add(8);	
+    for (int i = 0; i < 100; i++) {	
+        hist.Add(1048576);		
+    }	
+    hist.PrintLog2Hist();		
+}	
