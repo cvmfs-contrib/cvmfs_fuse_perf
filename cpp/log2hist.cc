@@ -182,19 +182,3 @@ class Log2Hist
         fflush(stdout);
     }
 };
-
-int main(void)		
-{		
-    Log2Hist hist(2);		
-    hist.Add(1);		
-    hist.Add(2);		
-    hist.Add(2);		
-    hist.Add(3);		
-    hist.Add(4);		
-    hist.Add(5);		
-    hist.Add(8);	
-    for (int i = 0; i < 100; i++) {	
-        hist.Add(1048576);		
-    }	
-    hist.PrintLog2Hist();		
-}	
