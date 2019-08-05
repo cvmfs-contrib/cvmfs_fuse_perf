@@ -14,24 +14,22 @@
 #include <sstream>
 #include <cassert>
 using namespace std; // NOLINT
-typedef u_int32_t uint32_t;
-typedef u_int64_t uint64_t;
 
 #define BUFFSIZE 150
 
 class Log2Hist
 {
  private:
-    uint32_t number_of_bins;
-    uint32_t *bins;
-    uint32_t *boundary_values;
-    uint32_t count_digits(uint64_t n)
+    uint number_of_bins;
+    uint *bins;
+    uint *boundary_values;
+    uint count_digits(ulong n)
     {
-        return (uint32_t)floor(log10(n) + 1);
+        return (uint)floor(log10(n) + 1);
     }
-    string generate_stars(uint32_t n)
+    string generate_stars(uint n)
     {
-        uint32_t i = 0;
+        uint i = 0;
         string stars = "";
         for (i = 0; i < n; i++)
         {
@@ -39,23 +37,23 @@ class Log2Hist
         }
         return stars;
     }
-    string to_string(uint32_t n)
+    string to_string(uint n)
     {
         stringstream s;
         s << n;
         return s.str();
     }
  public:
-    explicit Log2Hist(uint32_t n)
+    explicit Log2Hist(uint n)
     {
         assert(n != 0);
         this->number_of_bins = n;
-        this->bins = new uint32_t[n + 1]; // +1 for overflow bin.
-        this->boundary_values = new uint32_t[n + 1]; // +1 to avoid giant if statement
-        memset(this->bins, 0, sizeof(uint32_t) * (n + 1));
-        memset(this->boundary_values, 0, sizeof(uint32_t) * (n + 1));
+        this->bins = new uint[n + 1]; // +1 for overflow bin.
+        this->boundary_values = new uint[n + 1]; // +1 to avoid giant if statement
+        memset(this->bins, 0, sizeof(uint) * (n + 1));
+        memset(this->boundary_values, 0, sizeof(uint) * (n + 1));
 
-        uint32_t i;
+        uint i;
         for (i = 1; i <= n; i++)
         {
             this->boundary_values[i] = (1 << ((i - 1) + 1));
@@ -68,8 +66,8 @@ class Log2Hist
     }
     void Add(float value)
     {
-        uint32_t i;
-        uint32_t flag = 1; 
+        uint i;
+        uint flag = 1; 
 
         for (i = 1; i <= this->number_of_bins; i++)
         {
@@ -85,21 +83,21 @@ class Log2Hist
             this->bins[0]++; // add to overflow bin.
         }
     }
-    uint32_t *GetBins()
+    uint *GetBins()
     {
         return this->bins;
     }
     std::string Print()
     {
-        uint32_t i = 0;
+        uint i = 0;
 
-        uint32_t max_left_boundary_count = 1;
-        uint32_t max_right_boundary_count = 1;
-        uint32_t max_value_count = 1;
-        uint32_t max_stars = 0;
-        uint32_t max_bins = 0;
-        uint32_t total_stars = 38;
-        uint32_t total_sum_of_bins = 0;
+        uint max_left_boundary_count = 1;
+        uint max_right_boundary_count = 1;
+        uint max_value_count = 1;
+        uint max_stars = 0;
+        uint max_bins = 0;
+        uint total_stars = 38;
+        uint total_sum_of_bins = 0;
 
         for (i = 1; i <= number_of_bins; i++)
         {
@@ -154,7 +152,7 @@ class Log2Hist
 
         for (i = 1; i <= number_of_bins; i++)
         {
-            uint32_t n_of_stars = bins[i] * total_stars / total_sum_of_bins;
+            uint n_of_stars = bins[i] * total_stars / total_sum_of_bins;
             snprintf(buffer,
                     BUFFSIZE,
                     format.c_str(),
@@ -166,7 +164,7 @@ class Log2Hist
             memset(buffer, 0, sizeof(buffer));
         }
 
-        uint32_t n_of_stars = bins[0] * total_stars / total_sum_of_bins;
+        uint n_of_stars = bins[0] * total_stars / total_sum_of_bins;
         snprintf(buffer,
                 BUFFSIZE,
                 overflow_format.c_str(),
