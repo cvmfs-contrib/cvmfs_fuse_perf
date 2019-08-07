@@ -23,7 +23,7 @@ class Log2Hist
     uint number_of_bins;
     atomic_int32 *bins;
     uint *boundary_values;
-    uint count_digits(ulong n)
+    uint count_digits(unsigned long long n)
     {
         return (uint)floor(log10(n) + 1);
     }
