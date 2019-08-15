@@ -11,7 +11,7 @@ def usage():
 	exit()
 
 # arguments
-interval = 5
+interval = 99999999
 count = -1
 if len(argv) > 1:
 	try:
@@ -24,7 +24,7 @@ if len(argv) > 1:
 		usage()
 
 # load BPF program
-b = BPF(src_file = "fuse_lookup_name_lat.c")
+b = BPF(src_file = "bpf_latency_histogram.c")
 b.attach_kprobe(event="fuse_lookup_name", fn_name="do_entry")
 b.attach_kretprobe(event="fuse_lookup_name", fn_name="do_return")
 
