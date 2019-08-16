@@ -20,13 +20,14 @@ Currently the reposiotry stores only the scripts for tracing the FUSE kernel cal
 
 ## Usage
 
+Press "CTRL + C" to stop tracing.
+Depending on the configurations, you may need to execute the command with **root** priveleges.
+
 ### Measuring latencies.
 
 ```bash
 [user@pc]$ python [SCRIPT_NAME]
 ```
-Press "CTRL + C" to stop tracing.
-Depending on the configurations, you may need to execute the command with **root** priveleges.
 
 ### Retrieving counters.
 
