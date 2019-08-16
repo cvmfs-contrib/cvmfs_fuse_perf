@@ -56,7 +56,7 @@ In order to get all counters, you will need to use *fuse_calls_count.py*.
 
 
 
-[Logo]: (./blob/master/cernvmfs-logo.png)
+[Logo]: ./cernvmfs-logo.png
 [BCC]: (https://github.com/iovisor/bcc)
 [FUSE]: (https://en.wikipedia.org/wiki/Filesystem_in_Userspace)
 [CernVM-File System]: (https://cernvm.cern.ch/portal/filesystem)
