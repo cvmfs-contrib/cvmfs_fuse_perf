@@ -1,4 +1,4 @@
-!![alt text][Logo]
+![alt text][Logo]
 
 # Performance engineering of CernVM-FS's FUSE kernel callbacks. 
 
