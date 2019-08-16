@@ -1,4 +1,4 @@
-![Logo]
+!![alt text][Logo]
 
 # Performance engineering of CernVM-FS's FUSE kernel callbacks. 
 
@@ -57,7 +57,7 @@ In order to get all counters, you will need to use *fuse_calls_count.py*.
 
 
 
-[Logo]: ./cernvmfs-logo.png
+[Logo]: ./cernvmfs-logo.png "CernVM-FS Logo"
 [BCC]: (https://github.com/iovisor/bcc)
 [FUSE]: (https://en.wikipedia.org/wiki/Filesystem_in_Userspace)
 [CernVM-File System]: (https://cernvm.cern.ch/portal/filesystem)
